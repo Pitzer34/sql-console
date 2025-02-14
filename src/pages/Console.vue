@@ -1,46 +1,41 @@
 <script setup>
 import { computed, ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { usePublicStore } from '../store/publicStore.js';
 import FieldDialog from '../components/FieldDialog.vue';
 import db from '../composables/sql.js';
-import PanelMenu from 'primevue/panelmenu';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import ColumnGroup from 'primevue/columngroup';
-import FloatLabel from 'primevue/floatlabel';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
+import { DataTable, Column, FloatLabel, InputText, Button } from 'primevue';
+import { Icon } from "@iconify/vue";
 
-const fieldTemplate = ref([]);
+//* PiniaStore
+const publicStore = usePublicStore();
+const { sqlTableLists } = storeToRefs(publicStore);
 
-fieldTemplate.value.push({
-  fieldCode: 'id',
-  // fieldName: '測試用id',
-  type: 'int',
-  length: '',
-  primaryKey: true,
-  allowNull: false,
-  // comment: 'pk',
-  default: 'pkpk'
-});
-fieldTemplate.value.push({
-  fieldCode: 'test',
-  // fieldName: '測試用',
-  type: 'nvarchar',
-  length: '10',
-  primaryKey: false,
-  allowNull: true,
-  // comment: '測試comment',
-  default: 'hi'
-});
+const fieldTemplate = ref([
+  {
+    fieldCode: 'id',
+    type: 'int',
+    length: '',
+    primaryKey: true,
+    allowNull: false,
+    default: 'pkpk'
+  },
+  {
+    fieldCode: 'test',
+    type: 'nvarchar',
+    length: '10',
+    primaryKey: false,
+    allowNull: true,
+    default: 'hi'
+  }
+]);
 
 const columns = [
   { field: 'fieldCode', header: 'field Code' },
-  // { field: 'fieldName', header: 'fieldName' },
   { field: 'type', header: 'Type' },
   { field: 'length', header: 'Length' },
   { field: 'primaryKey', header: 'PK' },
   { field: 'allowNull', header: 'Null' },
-  // { field: 'comment', header: 'Comment' },
   { field: 'default', header: 'Default' }
 ];
 
@@ -49,22 +44,9 @@ const addNewFieldTemplate = (value) => {
   fieldTemplate.value.push(value);
 }
 
-const tableList = ref();
-const tableListItems = computed(() => {
-  if (!tableList.value) return;
-  return tableList.value.map((table) => {
-    const fieldCode = db.exec(`PRAGMA table_info(${table});`)[0].values.map((field) => {
-      return { label: field[1] }
-    });
-    console.log(fieldCode)
-    return {
-      label: table,
-      items: fieldCode,
-    }
-  });
-});
 const selectedFields = ref();
 const tableNm = ref('testtable');
+
 const createTable = () => {
   console.log(selectedFields.value);
   const fields = selectedFields.value.map(field => {
@@ -73,7 +55,6 @@ const createTable = () => {
     if (length) fieldStr += ` (${length})`;
     if (!allowNull) fieldStr += ' NOT NULL';
     if (defaultValue) fieldStr += ` DEFAULT '${defaultValue}'`;
-    // if (fieldName) fieldStr += ` COMMENT '${fieldName}'`;
 
     return fieldStr;
   });
@@ -89,8 +70,15 @@ const createTable = () => {
   console.log(createTableSqlStr)
 
   db.run(createTableSqlStr);
-  tableList.value = db.exec("SELECT name FROM sqlite_master WHERE type='table';")[0]?.values.map(item => item[0]);
-  console.log(tableList.value);
+  sqlTableLists.value = db.exec("SELECT name FROM sqlite_master WHERE type='table';")[0]?.values.map(item => item[0]);
+  console.log(sqlTableLists.value);
+}
+
+const deleteTemplate = (row) => {
+  const index = fieldTemplate.value.indexOf(row);
+  if (index > -1) {
+    fieldTemplate.value.splice(index, 1);
+  }
 }
 
 // const createTableSqlStr = "CREATE TABLE test(id int, name nvarchar(10))";
@@ -107,38 +95,30 @@ const createTable = () => {
 </script>
 
 <template>
-  <div class="grid grid-cols-3 gap-2 mx-10">
-    <div class="col-span-1 border rounded p-2 bg-white">
-      <PanelMenu :model="tableListItems" multiple />
-      <div class="">
-        <!-- <template v-for="i in tableList">
-          <div class="border-2 w-full">
-            {{ i }}
-          </div>
-        </template> -->
-      </div>
-    </div>
-    <div class="col-span-2 border-2 rounded p-2 bg-white">
-      <DataTable :value="fieldTemplate" v-model:selection="selectedFields" dataKey="fieldCode" size="small"
-        class="h-dvh">
-        <template #header>
-          <div class="flex items-center justify-between">
-            <span class="text-xl">Fleid Template</span>
-            <Button @click="addDialogVisible = true" size="small">Create new template</Button>
-          </div>
+  <div class="flex flex-col h-full">
+    <DataTable :value="fieldTemplate" v-model:selection="selectedFields" dataKey="fieldCode" size="small"
+      class="flex-1">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <span class="text-xl">Fleid Template</span>
+          <Button @click="addDialogVisible = true" size="small">Create new template</Button>
+        </div>
+      </template>
+      <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+      <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header"></Column>
+      <Column :rowEditor="true" class="min-w-8 w-[8%]">
+        <template #body="{ data }">
+          <Icon icon="material-symbols-light:delete-outline" width="24" height="24" @click="deleteTemplate(data)"
+            class="rounded border-red-400 text-red-400 hover:border-2" />
         </template>
-        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-        <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header"></Column>
-        <template #footer>
-          <div class="flex gap-4 mt-2">
-            <FloatLabel variant="on">
-              <InputText id="createTableName" size="small" v-model="tableNm" />
-              <label for="createTableName">Table Name</label>
-            </FloatLabel>
-            <Button @click="createTable" size="small">Create table</Button>
-          </div>
-        </template>
-      </DataTable>
+      </Column>
+    </DataTable>
+    <div class="flex gap-4 p-2">
+      <FloatLabel variant="on">
+        <InputText id="createTableName" size="small" v-model="tableNm" />
+        <label for="createTableName">Table Name</label>
+      </FloatLabel>
+      <Button @click="createTable" size="small">Create table</Button>
     </div>
     <FieldDialog v-model:visible="addDialogVisible" @submit="addNewFieldTemplate"></FieldDialog>
   </div>
