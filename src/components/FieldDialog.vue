@@ -72,10 +72,6 @@ const submitHandler = () => {
         <Checkbox id="allowNull" size="large" v-model="fieldInfo.allowNull" binary />
       </div>
     </div>
-    <!-- <div class="flex items-center gap-4 mb-4">
-      <label for="comment" class="font-semibold w-24">Comment</label>
-      <InputText id="comment" class="flex-auto" size="small" v-model="fieldInfo.comment" />
-    </div> -->
     <div class="flex items-center gap-4 mb-4">
       <label for="default" class="font-semibold w-24">Default</label>
       <InputText id="default" class="flex-auto" size="small" v-model="fieldInfo.default" />
