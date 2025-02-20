@@ -58,13 +58,6 @@ Object.entries(all).forEach(([name, rule]) => {
   defineRule(name, rule);
 });
 
-// 將當前 VeeValidate 的語系設定為繁體中文
-configure({
-  //generateMessage: localize({ zh_TW: zhTW }),
-  validateOnInput: true,
-});
-setLocale('zh_TW');
-
 // 掛載 VeeValidate 元件
 app.component('VField', Field);
 app.component('VForm', Form);
