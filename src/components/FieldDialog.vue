@@ -1,14 +1,16 @@
 <script setup>
 import { ref } from 'vue';
-import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import Select from 'primevue/select';
-import Checkbox from 'primevue/checkbox';
+import { Dialog, InputText, Button, Select, Checkbox } from 'primevue';
+// import Dialog from 'primevue/dialog';
+// import InputText from 'primevue/inputtext';
+// import Button from 'primevue/button';
+// import Select from 'primevue/select';
+// import Checkbox from 'primevue/checkbox';
+import { useForm } from 'vee-validate';
 
 const emptyFieldInfo = {
   fieldCode: '',
-  fieldName: '',
+  //fieldName: '',
   type: '',
   length: '',
   primaryKey: false,
@@ -26,6 +28,22 @@ const dialogVisible = defineModel('visible', {
 const typeOptions = [
   'char', 'varchar', 'nvarchar', 'int', 'decimal', 'date', 'boolean'
 ]
+
+const { handleSubmit, defineField, errors } = useForm({
+  initialValues: {
+    fieldCode: '',
+    type: '',
+    length: '',
+    primaryKey: false,
+    allowNull: false,
+    default: ''
+  },
+  validationSchema: {
+    fieldCode: {
+      required: true
+    }
+  }
+});
 
 const cancel = () => {
   fieldInfo.value = { ...emptyFieldInfo };
@@ -48,10 +66,6 @@ const submitHandler = () => {
       <label for="fieldCode" class="font-semibold w-24">Field Code</label>
       <InputText id="fieldCode" class="flex-auto" size="small" v-model="fieldInfo.fieldCode" />
     </div>
-    <!-- <div class="flex items-center gap-4 mb-4">
-      <label for="fieldName" class="font-semibold w-24">Field Name</label>
-      <InputText id="fieldName" class="flex-auto" size="small" v-model="fieldInfo.fieldName" />
-    </div> -->
     <div class="flex items-center gap-4 mb-4">
       <label for="type" class="font-semibold w-24">Type</label>
       <Select v-model="fieldInfo.type" :options="typeOptions" class="flex-auto" size="small"
