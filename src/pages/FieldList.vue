@@ -9,43 +9,15 @@ import { Icon } from "@iconify/vue";
 
 //* PiniaStore
 const publicStore = usePublicStore();
-const { sqlTableLists } = storeToRefs(publicStore);
-
-const fieldTemplate = ref([
-  {
-    fieldCode: 'id',
-    type: 'int',
-    length: '',
-    primaryKey: true,
-    allowNull: false,
-    default: 'pkpk'
-  },
-  {
-    fieldCode: 'test',
-    type: 'nvarchar',
-    length: '10',
-    primaryKey: false,
-    allowNull: true,
-    default: 'hi'
-  }
-]);
-
-const columns = [
-  { field: 'fieldCode', header: 'field Code' },
-  { field: 'type', header: 'Type' },
-  { field: 'length', header: 'Length' },
-  { field: 'primaryKey', header: 'PK' },
-  { field: 'allowNull', header: 'Null' },
-  { field: 'default', header: 'Default' }
-];
+const { sqlTableLists, fieldTemplates } = storeToRefs(publicStore);
 
 const addDialogVisible = ref(false);
 const addNewFieldTemplate = (value) => {
-  fieldTemplate.value.push(value);
+  fieldTemplates.value.push(value);
 }
 
 const selectedFields = ref();
-const tableNm = ref('testtable');
+const tableNm = ref('employees');
 
 const createTable = () => {
   console.log(selectedFields.value);
@@ -75,9 +47,9 @@ const createTable = () => {
 }
 
 const deleteTemplate = (row) => {
-  const index = fieldTemplate.value.indexOf(row);
+  const index = fieldTemplates.value.indexOf(row);
   if (index > -1) {
-    fieldTemplate.value.splice(index, 1);
+    fieldTemplates.value.splice(index, 1);
   }
 }
 
@@ -96,7 +68,7 @@ const deleteTemplate = (row) => {
 
 <template>
   <div class="flex flex-col h-full">
-    <DataTable :value="fieldTemplate" v-model:selection="selectedFields" dataKey="fieldCode" size="small"
+    <DataTable :value="fieldTemplates" v-model:selection="selectedFields" dataKey="fieldCode" size="small"
       class="flex-1">
       <template #header>
         <div class="flex items-center justify-between">
@@ -105,7 +77,7 @@ const deleteTemplate = (row) => {
         </div>
       </template>
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-      <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header"></Column>
+      <Column v-for="col in publicStore.fieldOptions" :key="col.field" :field="col.field" :header="col.header"></Column>
       <Column :rowEditor="true" class="min-w-8 w-[8%]">
         <template #body="{ data }">
           <Icon icon="material-symbols-light:delete-outline" width="24" height="24" @click="deleteTemplate(data)"
