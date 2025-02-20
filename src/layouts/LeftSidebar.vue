@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { usePublicStore } from '../store/publicStore';
+import { usePublicStore } from '../store/publicStore.js';
 import { storeToRefs } from 'pinia';
 import db from '../composables/sql.js';
 import PanelMenu from 'primevue/panelmenu';
@@ -27,7 +27,7 @@ const listItems = computed(() => {
 <template>
   <div class="flex flex-col border rounded p-2 bg-white h-full overflow-auto">
     <div class="text-xl px-2 py-1.5">{{ "Table List" }}</div>
-    <PanelMenu :model="listItems" multiple />
+    <PanelMenu :model="listItems" multiple pt:panel:class="border-none" />
   </div>
 </template>
 
