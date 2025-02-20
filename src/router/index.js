@@ -1,25 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Sidebar from '../components/Sidebar.vue';
 
 const routes = [
   {
     path: '/',
-    redirect: { name: 'Console' },
-  },
-  {
-    path: '/console',
-    name: 'Console',
-    component: () => import('../pages/Console.vue'),
-  },
-  {
-    path: '/sqlite',
-    name: 'SQLite',
-    component: () => import('../pages/SQLite.vue'),
+    component: () => import('../layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        redirect: { name: 'FieldList' },
+      },
+      {
+        path: 'field-list',
+        name: 'FieldList',
+        component: () => import('../pages/FieldList.vue'),
+      },
+      {
+        path: 'sqlite',
+        name: 'SQLite',
+        component: () => import('../pages/SQLite.vue'),
+      },
+      {
+        path: 'export-sql',
+        name: 'ExportSQL',
+        component: () => import('../pages/ExportSQL.vue'),
+      },
+    ],
   },
 ];
 
 const router = createRouter({
-  history: createWebHistory('/SQLMaker'),
+  history: createWebHistory('/sql-console'),
   routes: routes,
   scrollBehavior(to, from, savedPosition) {
     return {
