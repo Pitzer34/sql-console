@@ -10,12 +10,9 @@ import router from './router/index';
 import { createPinia } from 'pinia';
 // 引入 UI庫 PrimeVue
 import PrimeVue from 'primevue/config';
+import ToastService from 'primevue/toastservice';
 import Aura from '@primevue/themes/aura';
 import { definePreset } from '@primevue/themes';
-// 引入 Vee-Validate
-import { Field, Form, ErrorMessage, defineRule, configure } from 'vee-validate';
-import { localize, setLocale } from '@vee-validate/i18n';
-import { all } from '@vee-validate/rules';
 
 const app = createApp(App);
 
@@ -49,18 +46,9 @@ app.use(PrimeVue, {
     },
   },
 });
+app.use(ToastService);
 
 const pinia = createPinia();
 app.use(pinia);
-
-// 使用 Object.keys 將 AllRules 轉為陣列，使用 forEach 迴圈將驗證規則加入 VeeValidate
-Object.entries(all).forEach(([name, rule]) => {
-  defineRule(name, rule);
-});
-
-// 掛載 VeeValidate 元件
-app.component('VField', Field);
-app.component('VForm', Form);
-app.component('ErrorMessage', ErrorMessage);
 
 app.mount('#app');
