@@ -1,12 +1,6 @@
 <script setup>
 import { ref } from 'vue';
 import { Dialog, InputText, Button, Select, Checkbox } from 'primevue';
-// import Dialog from 'primevue/dialog';
-// import InputText from 'primevue/inputtext';
-// import Button from 'primevue/button';
-// import Select from 'primevue/select';
-// import Checkbox from 'primevue/checkbox';
-import { useForm } from 'vee-validate';
 
 const emptyFieldInfo = {
   fieldCode: '',
@@ -29,21 +23,6 @@ const typeOptions = [
   'char', 'varchar', 'nvarchar', 'int', 'decimal', 'date', 'boolean'
 ]
 
-const { handleSubmit, defineField, errors } = useForm({
-  initialValues: {
-    fieldCode: '',
-    type: '',
-    length: '',
-    primaryKey: false,
-    allowNull: false,
-    default: ''
-  },
-  validationSchema: {
-    fieldCode: {
-      required: true
-    }
-  }
-});
 
 const cancel = () => {
   fieldInfo.value = { ...emptyFieldInfo };
