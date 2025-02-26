@@ -19,7 +19,7 @@ const execute = () => {
 
 <template>
   <div class="flex flex-col gap-y-1 h-full p-2">
-    <Textarea v-model="text" size="large" class="w-full min-h-[50%] max-h-[50%]"></Textarea>
+    <Textarea v-model="text" size="large" class="w-full min-h-[50%] max-h-[50%]" />
     <div class="">
       <Button @click="execute">{{ "Execute" }}</Button>
     </div>
