@@ -32,7 +32,11 @@ const linkItems = ref([
               </RouterLink>
             </TabList>
             <TabPanels class="p-1 h-full">
-              <RouterView />
+              <RouterView v-slot="{ Component }">
+                <KeepAlive>
+                  <component :is="Component" />
+                </KeepAlive>
+              </RouterView>
             </TabPanels>
           </Tabs>
         </div>
