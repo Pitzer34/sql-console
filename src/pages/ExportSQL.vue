@@ -1,8 +1,12 @@
 <script setup>
 import { ref } from 'vue';
-import { Select, Button, Textarea } from 'primevue';
+import { Select, Button, Textarea, useToast, Toast } from 'primevue';
 import { useSqlStore } from '../store/sqlStore';
 
+//* primevue
+const toast = useToast();
+
+//* store
 const sqlStore = useSqlStore();
 
 const tableName = ref(sqlStore.tableNames[0]);
@@ -14,12 +18,20 @@ const exportTable = () => {
 
 const copy = async () => {
   await navigator.clipboard.writeText(text.value);
-  alert('copy success!');
+  toast.add({
+    severity: 'success',
+    summary: 'Copy success.',
+    life: 3000
+  });
 }
 
 const download = () => {
   if (!text.value) {
-    alert('nothing can download!');
+    toast.add({
+      severity: 'warn',
+      summary: 'Nothing can download.',
+      life: 3000
+    });
     return;
   }
   const blob = new Blob([text.value], { type: 'text/plain' });
@@ -36,6 +48,7 @@ const download = () => {
 
 <template>
   <div class="flex flex-col gap-y-4 h-full p-2">
+    <Toast />
     <div class="flex">
       <Select v-model="tableName" :options="sqlStore.tableNames" placeholder="Select a Table" class="w-56 mr-4" />
       <div class="flex gap-2">
