@@ -10,7 +10,7 @@ export const useSqlStore = defineStore('sqlStore', () => {
     { field: 'length', header: 'Length' },
     { field: 'primaryKey', header: 'PK' },
     { field: 'allowNull', header: 'Null' },
-    { field: 'default', header: 'Default' },
+    { field: 'defaultValue', header: 'Default' },
   ];
   const fields = ref([
     {
@@ -19,7 +19,7 @@ export const useSqlStore = defineStore('sqlStore', () => {
       length: '',
       primaryKey: true,
       allowNull: false,
-      default: 1,
+      defaultValue: 1,
     },
     {
       fieldCode: 'name',
@@ -27,7 +27,7 @@ export const useSqlStore = defineStore('sqlStore', () => {
       length: '10',
       primaryKey: false,
       allowNull: false,
-      default: 'JHON',
+      defaultValue: 'JHON',
     },
     {
       fieldCode: 'hired_on',
@@ -35,7 +35,7 @@ export const useSqlStore = defineStore('sqlStore', () => {
       length: '',
       primaryKey: false,
       allowNull: true,
-      default: '2000-01-01',
+      defaultValue: '2000-01-01',
     },
   ]);
   const tableName = ref('employees');
@@ -84,7 +84,7 @@ export const useSqlStore = defineStore('sqlStore', () => {
     // 定義欄位, 每一個欄位會依據屬性組合成對應的 SQL 語法
     const fieldClause = selectedFields.value
       .map((field) => {
-        const { fieldCode, type, length, allowNull, default: defaultValue } = field;
+        const { fieldCode, type, length, allowNull, defaultValue } = field;
         let str = `${fieldCode} ${type}`;
         if (length) str += ` (${length})`;
         if (allowNull === false) str += ' NOT NULL';
@@ -109,7 +109,6 @@ export const useSqlStore = defineStore('sqlStore', () => {
     }
 
     try {
-      console.log(createTableSqlStr);
       db.run(createTableSqlStr);
       const result = db.exec("SELECT Count(*) FROM sqlite_master WHERE type='table';");
       tableCount.value = result.length ? result[0].values[0][0] : 0;
