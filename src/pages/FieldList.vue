@@ -5,7 +5,7 @@ import FieldDialog from '../components/FieldDialog.vue';
 import { DataTable, Column, FloatLabel, InputText, Button, useToast, Toast } from 'primevue';
 import { Icon } from "@iconify/vue";
 
-//* Store
+//* store
 const sqlStore = useSqlStore();
 
 //* primevue
@@ -13,22 +13,25 @@ const toast = useToast();
 
 const createTable = () => {
   const { isSuccess, message } = sqlStore.createTable();
-  toast.add({ severity: isSuccess ? 'success' : 'error', summary: `${isSuccess ? 'Success' : 'Error'} Message`, detail: message, life: 3000 });
+  toast.add({
+    severity: isSuccess ? 'success' : 'error',
+    summary: message,
+    life: 3000
+  });
 };
 const addDialogVisible = ref(false);
-
-
 
 </script>
 
 <template>
   <div class="flex flex-col h-full">
+    <Toast />
     <DataTable :value="sqlStore.fields" v-model:selection="sqlStore.selectedFields" dataKey="fieldCode" size="small"
       class="flex-1">
       <template #header>
         <div class="flex items-center justify-between">
           <span class="text-xl">Fleid Template</span>
-          <Button @click="addDialogVisible = true" size="small">Create new template</Button>
+          <Button @click="addDialogVisible = true" size="small">New Field</Button>
         </div>
       </template>
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
@@ -45,10 +48,9 @@ const addDialogVisible = ref(false);
         <InputText id="createTableName" size="small" v-model="sqlStore.tableName" />
         <label for="createTableName">Table Name</label>
       </FloatLabel>
-      <Toast />
       <Button @click="createTable()" size="small">Create table</Button>
     </div>
-    <FieldDialog v-model:visible="addDialogVisible" @submit="sqlStore.createField(value)"></FieldDialog>
+    <FieldDialog v-model:visible="addDialogVisible" @submit="sqlStore.createField"></FieldDialog>
   </div>
 </template>
 
