@@ -151,6 +151,13 @@ export const useSqlStore = defineStore('sqlStore', () => {
     return `CREATE TABLE ${tableName} ${columnSQL})`;
   };
 
+  const setExampleTable = () => {
+    db.run(
+      "CREATE TABLE employees (id INT NOT NULL DEFAULT '1', name nvarchar (10) NOT NULL DEFAULT 'JHON', hired_on date DEFAULT '2000-01-01', PRIMARY KEY (id))"
+    );
+    tableCount.value += 1;
+  };
+
   return {
     tableName,
     fieldOptions,
@@ -162,5 +169,6 @@ export const useSqlStore = defineStore('sqlStore', () => {
     deleteField,
     createTable,
     exportTable,
+    setExampleTable,
   };
 });
