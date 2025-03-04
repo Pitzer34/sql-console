@@ -124,6 +124,11 @@ export const useSqlStore = defineStore('sqlStore', () => {
     }
   };
 
+  const deleteTable = (tableName = '') => {
+    db.run(`DROP TABLE IF EXISTS ${tableName};`);
+    tableCount.value -= 1;
+  };
+
   const exportTable = (tableName = '') => {
     const res = db.exec(`PRAGMA table_info(${tableName});`);
     const columns = res[0].values.map((row) => {
@@ -143,12 +148,12 @@ export const useSqlStore = defineStore('sqlStore', () => {
 
     const primaryKeys = columns.filter((col) => col.pk).map((col) => col.columnDef.split(' ')[0]);
 
-    let columnSQL = `(${columns.map((col) => col.columnDef).join(', ')}`;
+    let columnSQL = `${columns.map((col) => col.columnDef).join(',\n ')}`;
     if (primaryKeys.length > 0) {
-      columnSQL += `, PRIMARY KEY (${primaryKeys.join(', ')})`;
+      columnSQL += `\n PRIMARY KEY (${primaryKeys.join(', ')})`;
     }
 
-    return `CREATE TABLE ${tableName} ${columnSQL})`;
+    return `CREATE TABLE ${tableName} \n(${columnSQL})`;
   };
 
   const setExampleTable = () => {
@@ -168,6 +173,7 @@ export const useSqlStore = defineStore('sqlStore', () => {
     createField,
     deleteField,
     createTable,
+    deleteTable,
     exportTable,
     setExampleTable,
   };
