@@ -4,7 +4,7 @@ import { Textarea, Button, Message } from 'primevue';
 import db from '../composables/sql.js';
 import LogTable from '../components/LogTable.vue';
 
-const text = ref('insert into employees values\n(1, "John Doe", "2020-07-07"),\n(2, "Amy", "2022-03-21"),\n(3, "Armstrong", "2024-11-14");\n\nselect * from employees;');
+const text = ref('INSERT INTO employees VALUES (1, "John Doe", "2020-07-07");\nINSERT INTO employees VALUES (2, "Amy", "2022-03-21");\nINSERT INTO employees VALUES (3, "Armstrong", "2024-11-14");\n\nSELECT * FROM employees;');
 const result = ref([]);
 
 const execute = () => {
