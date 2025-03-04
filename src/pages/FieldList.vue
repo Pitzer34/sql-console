@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useSqlStore } from '../store/sqlStore.js';
 import FieldDialog from '../components/FieldDialog.vue';
 import { DataTable, Column, FloatLabel, InputText, Button, useToast, Toast } from 'primevue';
@@ -20,10 +20,6 @@ const createTable = () => {
   });
 };
 const addDialogVisible = ref(false);
-
-onMounted(() => {
-  sqlStore.setExampleTable();
-});
 </script>
 
 <template>
