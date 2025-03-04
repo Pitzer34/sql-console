@@ -1,7 +1,7 @@
 <script setup>
+import { Icon } from '@iconify/vue/dist/iconify.js';
 import { useSqlStore } from '../store/sqlStore.js';
-
-import PanelMenu from 'primevue/panelmenu';
+import { PanelMenu } from 'primevue';
 
 const sqlStore = useSqlStore();
 
@@ -9,8 +9,22 @@ const sqlStore = useSqlStore();
 
 <template>
   <div class="flex flex-col border rounded p-2 bg-white h-full overflow-auto">
-    <div class="text-xl px-2 py-1.5">{{ "Table List" }}</div>
-    <PanelMenu :model="sqlStore.tableLists" multiple pt:panel:class="" />
+    <div class="text-xl px-2 py-1.5">{{ "Table" }}</div>
+    <PanelMenu :model="sqlStore.tableLists" multiple pt:panel:class="border-0 p-0">
+      <template #item="{ item }">
+        <div v-if="item.items" class="flex items-center">
+          <Icon icon="mingcute:right-fill" width="24" height="24" />
+          <span>{{ item.label }}</span>
+          <span class="flex-1 flex justify-end">
+            <Icon icon="material-symbols-light:delete-outline" width="24" height="24"
+              class="rounded border-red-400 text-red-400 hover:border-2" @click="sqlStore.deleteTable(item.label)" />
+          </span>
+        </div>
+        <div v-else class="flex items-center">
+          <span>{{ item.label }}</span>
+        </div>
+      </template>
+    </PanelMenu>
   </div>
 </template>
 
