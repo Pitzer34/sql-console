@@ -13,7 +13,7 @@ const sqlStore = useSqlStore();
     <PanelMenu :model="sqlStore.tableLists" multiple pt:panel:class="border-0 p-0">
       <template #item="{ item }">
         <div v-if="item.items" class="flex items-center">
-          <Icon icon="mingcute:right-fill" width="24" height="24" />
+          <Icon icon="mingcute:right-fill" width="20" height="20" />
           <span>{{ item.label }}</span>
           <span class="flex-1 flex justify-end">
             <Icon icon="material-symbols-light:delete-outline" width="24" height="24"
