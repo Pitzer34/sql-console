@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, KeepAlive } from 'vue';
 import { RouterView, RouterLink } from 'vue-router';
+import { Icon } from "@iconify/vue";
 import { Tabs, TabList, Tab, TabPanels } from 'primevue';
 import LeftSidebar from './LeftSidebar.vue';
 
@@ -17,7 +18,12 @@ const linkItems = ref([
 <template>
   <main class="mx-auto max-w-7xl h-full">
     <div class="flex flex-col h-full">
-      <h1 class="text-center text-3xl font-bold py-4">{{ title }}</h1>
+      <div class="flex justify-center items-center gap-4 py-4">
+        <h1 class="text-3xl font-bold">{{ title }}</h1>
+        <a href="https://github.com/Pitzer34/sql-console" target="_blank" rel="noopener">
+          <Icon icon="mdi:github" width="2rem" heigth="2rem" />
+        </a>
+      </div>
       <div class="flex-1 grid grid-cols-5 gap-2 mx-10">
         <div class="col-span-1">
           <LeftSidebar />
