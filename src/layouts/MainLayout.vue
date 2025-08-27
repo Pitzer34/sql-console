@@ -1,7 +1,6 @@
 <script setup>
 import { ref, KeepAlive } from 'vue';
 import { RouterView, RouterLink } from 'vue-router';
-import { Icon } from "@iconify/vue";
 import { Tabs, TabList, Tab, TabPanels } from 'primevue';
 import LeftSidebar from './LeftSidebar.vue';
 
@@ -12,7 +11,6 @@ const linkItems = ref([
   { routeNm: 'SQLite', label: 'SQLite', icon: '' },
   { routeNm: 'ExportSQL', label: 'ExportSQL', icon: '' },
 ]);
-
 </script>
 
 <template>
@@ -21,7 +19,7 @@ const linkItems = ref([
       <div class="flex justify-center items-center gap-4 py-4">
         <h1 class="text-3xl font-bold">{{ title }}</h1>
         <a href="https://github.com/Pitzer34/sql-console" target="_blank" rel="noopener">
-          <Icon icon="mdi:github" width="2rem" heigth="2rem" />
+          <Iconify icon="mdi:github" width="2rem" heigth="2rem" />
         </a>
       </div>
       <div class="flex-1 grid grid-cols-5 gap-2 mx-10">
@@ -48,7 +46,7 @@ const linkItems = ref([
         </div>
       </div>
       <footer class="text-center py-4">
-        {{ "© 2025 Pitzer34. All rights reserved. " }}
+        {{ '© 2025 Pitzer34. All rights reserved. ' }}
       </footer>
     </div>
   </main>

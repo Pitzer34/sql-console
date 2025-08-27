@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import db from '../composables/sql.js';
+import db from '../services/utils/sql.js';
 
 export const useSqlStore = defineStore('sqlStore', () => {
   //* State
@@ -94,9 +94,7 @@ export const useSqlStore = defineStore('sqlStore', () => {
       .join(', ');
 
     // 定義 PK 的 SQL 語法
-    const primaryKeys = selectedFields.value
-      .filter((field) => field.primaryKey)
-      .map((field) => field.fieldCode);
+    const primaryKeys = selectedFields.value.filter((field) => field.primaryKey).map((field) => field.fieldCode);
     const primaryKeyClause = primaryKeys.length ? `, PRIMARY KEY (${primaryKeys.join(', ')})` : '';
 
     // 組合完整的 Create Table SQL 指令

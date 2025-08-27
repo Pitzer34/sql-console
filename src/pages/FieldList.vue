@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import { useSqlStore } from '../store/sqlStore.js';
 import FieldDialog from '../components/FieldDialog.vue';
 import { DataTable, Column, FloatLabel, InputText, Button, useToast, Toast } from 'primevue';
-import { Icon } from "@iconify/vue";
 
 //* store
 const sqlStore = useSqlStore();
@@ -16,7 +15,7 @@ const createTable = () => {
   toast.add({
     severity: isSuccess ? 'success' : 'error',
     summary: message,
-    life: 3000
+    life: 3000,
   });
 };
 const addDialogVisible = ref(false);
@@ -25,8 +24,13 @@ const addDialogVisible = ref(false);
 <template>
   <div class="flex flex-col h-full">
     <Toast />
-    <DataTable :value="sqlStore.fields" v-model:selection="sqlStore.selectedFields" dataKey="fieldCode" size="small"
-      class="flex-1">
+    <DataTable
+      :value="sqlStore.fields"
+      v-model:selection="sqlStore.selectedFields"
+      dataKey="fieldCode"
+      size="small"
+      class="flex-1"
+    >
       <template #header>
         <div class="flex items-center justify-between">
           <span class="text-xl">Fleid Template</span>
@@ -37,8 +41,13 @@ const addDialogVisible = ref(false);
       <Column v-for="col in sqlStore.fieldOptions" :key="col.field" :field="col.field" :header="col.header"></Column>
       <Column :rowEditor="true" class="min-w-8 w-[8%]">
         <template #body="{ data }">
-          <Icon icon="material-symbols-light:delete-outline" width="24" height="24" @click="sqlStore.deleteField(data)"
-            class="rounded border-red-400 text-red-400 hover:border-2" />
+          <Iconify
+            icon="material-symbols-light:delete-outline"
+            width="24"
+            height="24"
+            @click="sqlStore.deleteField(data)"
+            class="rounded border-red-400 text-red-400 hover:border-2"
+          />
         </template>
       </Column>
     </DataTable>

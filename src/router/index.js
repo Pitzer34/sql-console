@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
   {
@@ -29,12 +29,11 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHashHistory('/sql-console'),
+  history: createWebHistory(),
   routes: routes,
   scrollBehavior(to, from, savedPosition) {
     return {
       top: 0,
-      behavior: 'smooth',
     };
   },
 });
