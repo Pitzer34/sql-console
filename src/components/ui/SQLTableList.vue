@@ -1,13 +1,13 @@
 <script setup>
-import { useSqlStore } from '../store/sqlStore.js';
+import { useSqlStore } from '../../store/sqlStore.js';
 import { PanelMenu } from 'primevue';
 
 const sqlStore = useSqlStore();
 </script>
 
 <template>
-  <div class="flex flex-col border rounded p-2 bg-white h-full overflow-auto">
-    <div class="text-xl px-2 py-1.5">{{ 'Table' }}</div>
+  <div class="flex flex-col rounded p-1 bg-white h-full overflow-auto">
+    <div class="text-xl px-2 py-1.5">{{ '資料表' }}</div>
     <PanelMenu :model="sqlStore.tableLists" multiple pt:panel:class="border-0 p-0">
       <template #item="{ item }">
         <div v-if="item.items" class="flex items-center">

@@ -3,28 +3,29 @@ import { createRouter, createWebHistory } from 'vue-router';
 const routes = [
   {
     path: '/',
-    component: () => import('../layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        redirect: { name: 'FieldList' },
-      },
-      {
-        path: 'field-list',
-        name: 'FieldList',
-        component: () => import('../pages/FieldList.vue'),
-      },
-      {
-        path: 'sqlite',
-        name: 'SQLite',
-        component: () => import('../pages/SQLite.vue'),
-      },
-      {
-        path: 'export-sql',
-        name: 'ExportSQL',
-        component: () => import('../pages/ExportSQL.vue'),
-      },
-    ],
+    name: 'Design',
+    component: () => import('../pages/Design.vue'),
+    // children: [
+    //   {
+    //     path: '',
+    //     redirect: { name: 'FieldList' },
+    //   },
+    //   {
+    //     path: 'field-list',
+    //     name: 'FieldList',
+    //     component: () => import('../pages/FieldList.vue'),
+    //   },
+    //   {
+    //     path: 'sqlite',
+    //     name: 'SQLite',
+    //     component: () => import('../pages/SQLite.vue'),
+    //   },
+    //   {
+    //     path: 'export-sql',
+    //     name: 'ExportSQL',
+    //     component: () => import('../pages/ExportSQL.vue'),
+    //   },
+    // ],
   },
 ];
 
