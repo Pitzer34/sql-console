@@ -1,178 +1,129 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import db from '../services/utils/sql.js';
+import initSqlJs from 'sql.js';
+
+const SQL = await initSqlJs({
+  locateFile: (file) => `https://sql.js.org/dist/${file}`,
+});
+
+const db = new SQL.Database();
+
+const buildColumnSql = (col) => {
+  const { columnName, dataType, length, allowNull, isIdentity } = col;
+  if (!columnName?.trim()) {
+    throw new Error('欄位名稱不能為空');
+  }
+
+  return [
+    `${columnName} ${dataType}`,
+    length?.trim() ? `(${length})` : '',
+    allowNull ? '' : 'NOT NULL',
+    isIdentity ? 'AUTOINCREMENT' : '',
+  ]
+    .join(' ')
+    .trim();
+};
+
+const buildPrimaryKeySql = (columns = []) => {
+  const primaryKeys = columns.filter((col) => col.isPrimaryKey).map((col) => col.columnName);
+  return primaryKeys.length ? `, PRIMARY KEY (${primaryKeys.join(', ')})` : '';
+};
 
 export const useSqlStore = defineStore('sqlStore', () => {
-  //* State
-  const fieldOptions = [
-    { field: 'fieldCode', header: 'field Code' },
-    { field: 'type', header: 'Type' },
-    { field: 'length', header: 'Length' },
-    { field: 'primaryKey', header: 'PK' },
-    { field: 'allowNull', header: 'Null' },
-    { field: 'defaultValue', header: 'Default' },
-  ];
-  const fields = ref([
-    {
-      fieldCode: 'id',
-      type: 'int',
-      length: '',
-      primaryKey: true,
-      allowNull: false,
-      defaultValue: 1,
-    },
-    {
-      fieldCode: 'name',
-      type: 'nvarchar',
-      length: '10',
-      primaryKey: false,
-      allowNull: false,
-      defaultValue: 'JHON',
-    },
-    {
-      fieldCode: 'hired_on',
-      type: 'date',
-      length: '',
-      primaryKey: false,
-      allowNull: true,
-      defaultValue: '2000-01-01',
-    },
-  ]);
-  const tableName = ref('employees');
-  const selectedFields = ref([]);
-  const tableCount = ref(0);
+  const tables = ref([]);
 
-  //* Getters
-  const tableNames = computed(() => {
-    if (tableCount.value === 0) return [];
-    return getTableNames();
-  });
-
-  const tableLists = computed(() => {
-    if (tableCount.value === 0) return [];
-    const tableNames = getTableNames();
-    const tables = tableNames.map((tableName) => ({
-      label: tableName,
-      items: getTableFields(tableName),
-    }));
-    return tables;
-  });
-
-  //* Actions
-  const createField = (value) => {
-    fields.value.push(value);
-  };
-
-  const deleteField = (row) => {
-    const index = fields.value.indexOf(row);
-    if (index > -1) {
-      fields.value.splice(index, 1);
-    }
-  };
-
-  const getTableNames = () => {
-    const result = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
-    return result.length ? result[0].values.map((item) => item[0]) : [];
-  };
-
-  const getTableFields = (tableName = '') => {
-    const result = db.exec(`PRAGMA table_info(${tableName});`);
-    return result.length ? result[0].values.map((field) => ({ label: field[1] })) : [];
-  };
-
-  const createTable = () => {
-    // 定義欄位, 每一個欄位會依據屬性組合成對應的 SQL 語法
-    const fieldClause = selectedFields.value
-      .map((field) => {
-        const { fieldCode, type, length, allowNull, defaultValue } = field;
-        let str = `${fieldCode} ${type}`;
-        if (length) str += ` (${length})`;
-        if (allowNull === false) str += ' NOT NULL';
-        if (defaultValue !== null) str += ` DEFAULT '${defaultValue}'`;
-        return str;
-      })
-      .join(', ');
-
-    // 定義 PK 的 SQL 語法
-    const primaryKeys = selectedFields.value.filter((field) => field.primaryKey).map((field) => field.fieldCode);
-    const primaryKeyClause = primaryKeys.length ? `, PRIMARY KEY (${primaryKeys.join(', ')})` : '';
-
-    // 組合完整的 Create Table SQL 指令
-    let createTableSqlStr = 'CREATE TABLE';
-    if (tableName.value) {
-      createTableSqlStr += ` ${tableName.value}`;
-      if (fieldClause && primaryKeyClause) {
-        createTableSqlStr += ` (${fieldClause}${primaryKeyClause})`;
-      }
-    }
-
+  const readTable = () => {
     try {
+      const result = db.exec("SELECT * FROM sqlite_master WHERE type='table';");
+      if (result.length && result[0].values.length) {
+        const tablesWithColumns = result[0].values.map((row) => {
+          const tableName = row[1];
+          const columnInfo = getTableColumns(tableName);
+          return {
+            name: tableName,
+            columns: columnInfo,
+          };
+        });
+
+        tables.value = tablesWithColumns;
+      } else {
+        tables.value = [];
+      }
+    } catch (error) {
+      console.log('讀取資料表失敗:', error);
+      tables.value = [];
+    }
+  };
+
+  const getTableColumns = (tableName) => {
+    try {
+      const columnResult = db.exec(`PRAGMA table_info(${tableName});`);
+      console.log(columnResult);
+      if (columnResult.length && columnResult[0].values.length) {
+        return columnResult[0].values.map((col) => ({
+          cid: col[0],
+          name: col[1],
+          type: col[2],
+          allowNull: col[3] === 0,
+          isPrimaryKey: col[5] === 1,
+        }));
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.log(`讀取表格 ${tableName} 欄位資訊失敗:`, error);
+      return [];
+    }
+  };
+
+  const createTable = (tableName, columns) => {
+    try {
+      if (!tableName?.trim()) {
+        throw new Error('請輸入資料表名稱');
+      }
+
+      if (!Array.isArray(columns) || columns.length === 0) {
+        throw new Error('至少需要一個欄位');
+      }
+      const fieldClause = columns.map(buildColumnSql).join(', ');
+      const primaryKeyClause = buildPrimaryKeySql(columns);
+      const createTableSqlStr = `CREATE TABLE ${tableName} (${fieldClause}${primaryKeyClause})`;
+
       db.run(createTableSqlStr);
-      const result = db.exec("SELECT Count(*) FROM sqlite_master WHERE type='table';");
-      tableCount.value = result.length ? result[0].values[0][0] : 0;
+      readTable();
+
       return {
         isSuccess: true,
-        message: 'Create Success!',
+        message: `資料表 "${tableName}" 已建立`,
       };
     } catch (error) {
       return {
         isSuccess: false,
-        message: error.message || error,
+        message: error.message || String(error),
       };
     }
   };
 
-  const deleteTable = (tableName = '') => {
-    db.run(`DROP TABLE IF EXISTS ${tableName};`);
-    tableCount.value -= 1;
-  };
-
-  const exportTable = (tableName = '') => {
-    const res = db.exec(`PRAGMA table_info(${tableName});`);
-    const columns = res[0].values.map((row) => {
-      const cid = row[0];
-      const name = row[1];
-      const type = row[2];
-      const notNull = row[3];
-      const dflt_value = row[4];
-      const pk = row[5];
-
-      let columnDef = `${name} ${type}`;
-      if (notNull) columnDef += ' NOT NULL';
-      if (dflt_value !== null) columnDef += ` DEFAULT ${dflt_value}`;
-
-      return { columnDef, pk };
-    });
-
-    const primaryKeys = columns.filter((col) => col.pk).map((col) => col.columnDef.split(' ')[0]);
-
-    let columnSQL = `${columns.map((col) => col.columnDef).join(',\n ')}`;
-    if (primaryKeys.length > 0) {
-      columnSQL += `\n PRIMARY KEY (${primaryKeys.join(', ')})`;
+  const deleteTable = (tableName) => {
+    try {
+      db.run(`DROP TABLE IF EXISTS ${tableName};`);
+      readTable();
+      return {
+        isSuccess: true,
+        message: `資料表 "${tableName}" 已刪除`,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: error.message || String(error),
+      };
     }
-
-    return `CREATE TABLE ${tableName} \n(${columnSQL})`;
-  };
-
-  const setExampleTable = () => {
-    db.run(
-      "CREATE TABLE employees (id INT NOT NULL DEFAULT '1', name nvarchar (10) NOT NULL DEFAULT 'JHON', hired_on date DEFAULT '2000-01-01', PRIMARY KEY (id))"
-    );
-    tableCount.value += 1;
   };
 
   return {
-    tableName,
-    fieldOptions,
-    fields,
-    selectedFields,
-    tableNames,
-    tableLists,
-    createField,
-    deleteField,
+    tables,
     createTable,
+    readTable,
     deleteTable,
-    exportTable,
-    setExampleTable,
   };
 });

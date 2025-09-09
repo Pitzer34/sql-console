@@ -1,18 +1,20 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { useSqlStore } from './store/sqlStore.js';
+// import { initializeDatabase } from './composables/useDatabase';
+// import { useSqlStore } from './store/sqlStore.js';
 import { RouterView } from 'vue-router';
 import { Tabs, TabList, Tab, TabPanels } from 'primevue';
 import AppHeader from './components/layouts/AppHeader.vue';
 import AppFooter from './components/layouts/AppFooter.vue';
 import SQLTableList from './components/ui/SQLTableList.vue';
 
-const sqlStore = useSqlStore();
 const linkItems = ref([
   { routeNm: 'Design', label: '資料表設計', icon: '' },
   // { routeNm: 'SQLite', label: 'SQLite', icon: '' },
   // { routeNm: 'ExportSQL', label: 'ExportSQL', icon: '' },
 ]);
+
+onMounted(async () => {});
 </script>
 
 <template>

@@ -12,3 +12,16 @@ export const DATATYPES = [
   { label: 'smallint', value: 'smallint', hasLength: false },
   { label: 'tinyint', value: 'tinyint', hasLength: false },
 ];
+
+export class COLUMNS {
+  constructor(id = 0) {
+    this.id = id;
+    this.columnName = '';
+    this.dataType = DATATYPES[0].value;
+    this.length = '';
+    this.allowNull = false;
+    this.isPrimaryKey = false;
+    this.isIdentity = false;
+    this.selected = false;
+  }
+}

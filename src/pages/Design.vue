@@ -1,37 +1,16 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useSqlStore } from '../store/sqlStore.js';
-import { DATATYPES } from '../services/constants/dataType.js';
+import { DATATYPES, COLUMNS } from '../services/constants/dataType.js';
 import { FloatLabel, InputText, Checkbox, Select, Button, useToast, Toast } from 'primevue';
-
-//* store
-const sqlStore = useSqlStore();
 
 //* primevue
 const toast = useToast();
 
-const createTable = () => {
-  const { isSuccess, message } = sqlStore.createTable();
-  toast.add({
-    severity: isSuccess ? 'success' : 'error',
-    summary: message,
-    life: 3000,
-  });
-};
+const sqlStore = useSqlStore();
 
 //* 欄位資料
-const columns = ref([
-  {
-    id: 1,
-    columnName: '',
-    dataType: 'int',
-    length: '',
-    allowNull: false,
-    isPrimaryKey: false,
-    isIdentity: false,
-    selected: false,
-  },
-]);
+const columns = ref([new COLUMNS(1)]);
 
 const selectAll = ref(false);
 const toggleSelectAll = () => {
@@ -40,16 +19,7 @@ const toggleSelectAll = () => {
 
 const addColumn = () => {
   const newId = Math.max(...columns.value.map((col) => col.id)) + 1;
-  columns.value.push({
-    id: newId,
-    columnName: '',
-    dataType: 'int',
-    length: '',
-    allowNull: false,
-    isPrimaryKey: false,
-    isIdentity: false,
-    selected: false,
-  });
+  columns.value.push(new COLUMNS(newId));
 };
 
 const deleteSelectedColumns = () => {
@@ -65,12 +35,33 @@ const onDataTypeChange = (column) => {
     column.length = '';
   }
 };
+
+const createTableName = ref('');
+const createTable = async () => {
+  const selectedColumns = columns.value.filter((col) => col.selected);
+  const { isSuccess, message } = sqlStore.createTable(createTableName.value, selectedColumns);
+
+  toast.add({
+    severity: isSuccess ? 'success' : 'error',
+    summary: message,
+    life: 3000,
+  });
+};
 </script>
 
 <template>
   <div class="">
     <Toast />
     <div class="p-3 border border-gray-200 shadow-sm mb-4">
+      <!-- 顯示共享狀態 -->
+      <!-- <div class="mb-4 p-3 bg-gray-50 rounded">
+        <div class="flex justify-between items-center text-sm">
+          <span>資料表數量: {{ database.tableCount }}</span>
+          <span v-if="database.isLoading">🔄 載入中...</span>
+          <Button @click="database.refresh" size="small" outlined>重新整理</Button>
+        </div>
+        <div v-if="database.errorMsg" class="text-red-600 mt-2">{{ database.errorMsg }}</div>
+      </div> -->
       <div class="flex justify-between items-center-safe">
         <div class="flex gap-4">
           <Button @click="addColumn()" size="small" outlined>新增欄位</Button>
@@ -78,7 +69,7 @@ const onDataTypeChange = (column) => {
         </div>
         <div class="flex gap-4">
           <FloatLabel variant="on">
-            <InputText id="createTableName" size="small" v-model="sqlStore.tableName" class="w-48" />
+            <InputText id="createTableName" v-model="createTableName" size="small" class="w-48" />
             <label for="createTableName">資料表名稱</label>
           </FloatLabel>
           <Button @click="createTable()" size="small">建立資料表</Button>
