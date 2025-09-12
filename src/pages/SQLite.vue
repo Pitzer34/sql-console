@@ -1,40 +1,71 @@
 <script setup>
 import { ref } from 'vue';
-import { Textarea, Button, Message } from 'primevue';
-import db from '../services/utils/sql.js';
-import LogTable from '../components/LogTable.vue';
+import { Textarea, Button, useToast } from 'primevue';
+import AppCard from '../components/ui/AppCard.vue';
+import LogTable from '../components/ui/LogTable.vue';
+import { useSqlStore } from '../store/sqlStore';
+import { useSqlite } from '../composables/sqlite';
 
-const text = ref(
-  'INSERT INTO employees VALUES (1, "John Doe", "2020-07-07");\nINSERT INTO employees VALUES (2, "Amy", "2022-03-21");\nINSERT INTO employees VALUES (3, "Armstrong", "2024-11-14");\n\nSELECT * FROM employees;'
-);
+//* Pinia Store
+const sqlStore = useSqlStore();
+//* Composable
+const sqlite = useSqlite();
+//* primevue
+const toast = useToast();
+
+const text = ref('');
 const result = ref([]);
 
 const execute = () => {
   try {
-    result.value = db.exec(text.value);
+    result.value = sqlStore.sqliteDB.exec(text.value);
+    sqlite.refreshTableSidebar();
+    if (result.value.length === 0) {
+      result.value = '執行完成';
+    }
   } catch (error) {
     result.value = error;
+  }
+};
+
+const getExampleSqlStr = () => {
+  const { isSuccess, message } = sqlite.getSampleSqliteDataExcuteStr();
+  if (isSuccess) {
+    text.value = message;
+  } else {
+    toast.add({
+      severity: 'error',
+      summary: message,
+      life: sqlStore.toastTime,
+    });
   }
 };
 </script>
 
 <template>
-  <div class="flex flex-col gap-y-1 h-full p-2">
-    <Textarea v-model="text" size="large" class="w-full min-h-[50%] max-h-[50%]" />
-    <div class="">
-      <Button @click="execute">{{ 'Execute' }}</Button>
+  <main class="flex flex-col gap-2">
+    <div class="flex-1">
+      <Textarea id="sqlText" v-model="text" class="w-full h-full" style="resize: none" />
     </div>
-    <template v-if="Array.isArray(result)">
-      <div class="flex flex-col gap-y-2 overflow-auto">
-        <div v-for="table in result" :key="table" class="self-center">
-          <LogTable :data="table" />
+    <AppCard class="flex gap-4">
+      <Button @click="execute" size="small" severity="danger" outlined>
+        <Iconify icon="mingcute:play-fill" width="24" height="24" />
+      </Button>
+      <Button @click="getExampleSqlStr" size="small" severity="info" outlined>
+        <Iconify icon="ant-design:code-outlined" width="24" height="24" />
+      </Button>
+    </AppCard>
+    <AppCard class="flex-1 overflow-auto">
+      <div v-if="Array.isArray(result)" class="flex flex-col gap-4">
+        <div v-for="(table, index) in result" :key="index">
+          <LogTable :data="table" class="" />
         </div>
       </div>
-    </template>
-    <template v-else>
-      <Message severity="error" size="large">{{ result }}</Message>
-    </template>
-  </div>
+      <div v-else class="p-2">
+        <span class="text-wrap">{{ result }}</span>
+      </div>
+    </AppCard>
+  </main>
 </template>
 
 <style scoped></style>

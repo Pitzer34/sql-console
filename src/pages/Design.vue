@@ -1,14 +1,15 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useSqlStore } from '../store/sqlStore.js';
+import { useSqlite } from '../composables/sqlite.js';
 import { DATATYPES, COLUMNS } from '../services/constants/dataType.js';
 import { FloatLabel, InputText, Checkbox, Select, Button, useToast, Toast } from 'primevue';
+import AppCard from '../components/ui/AppCard.vue';
 
+//* Pinia Store
+const sqlStore = useSqlStore();
 //* primevue
 const toast = useToast();
-
-const sqlStore = useSqlStore();
-
 //* 欄位資料
 const columns = ref([new COLUMNS(1)]);
 
@@ -36,32 +37,35 @@ const onDataTypeChange = (column) => {
   }
 };
 
+//* sqlite composable
+const sqlite = useSqlite();
+
 const createTableName = ref('');
 const createTable = async () => {
   const selectedColumns = columns.value.filter((col) => col.selected);
-  const { isSuccess, message } = sqlStore.createTable(createTableName.value, selectedColumns);
+  const { isSuccess, message } = sqlite.createTable(createTableName.value, selectedColumns);
 
   toast.add({
     severity: isSuccess ? 'success' : 'error',
     summary: message,
-    life: 3000,
+    life: sqlStore.toastTime,
   });
 };
+
+// onMounted(async () => {
+//   const { isSuccess, message } = sqlite.mountSampleSqliteData();
+//   toast.add({
+//     severity: isSuccess ? 'success' : 'error',
+//     summary: message,
+//     life: sqlStore.toastTime,
+//   });
+// });
 </script>
 
 <template>
-  <div class="">
+  <main>
     <Toast />
-    <div class="p-3 border border-gray-200 shadow-sm mb-4">
-      <!-- 顯示共享狀態 -->
-      <!-- <div class="mb-4 p-3 bg-gray-50 rounded">
-        <div class="flex justify-between items-center text-sm">
-          <span>資料表數量: {{ database.tableCount }}</span>
-          <span v-if="database.isLoading">🔄 載入中...</span>
-          <Button @click="database.refresh" size="small" outlined>重新整理</Button>
-        </div>
-        <div v-if="database.errorMsg" class="text-red-600 mt-2">{{ database.errorMsg }}</div>
-      </div> -->
+    <AppCard class="mb-4">
       <div class="flex justify-between items-center-safe">
         <div class="flex gap-4">
           <Button @click="addColumn()" size="small" outlined>新增欄位</Button>
@@ -75,8 +79,8 @@ const createTable = async () => {
           <Button @click="createTable()" size="small">建立資料表</Button>
         </div>
       </div>
-    </div>
-    <div class="overflow-auto shadow-sm" style="max-height: calc(100vh - 287px)">
+    </AppCard>
+    <div class="overflow-auto shadow-sm" style="max-height: calc(100vh - 290px)">
       <table class="w-full border-collapse">
         <thead class="sticky top-0 z-10">
           <tr class="bg-gray-100">
@@ -142,7 +146,7 @@ const createTable = async () => {
         </tbody>
       </table>
     </div>
-  </div>
+  </main>
 </template>
 
 <style scoped></style>
