@@ -1,31 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { useSqlStore } from '../store/sqlStore';
 
 const routes = [
   {
     path: '/',
+    redirect: { name: 'Design' },
+  },
+  {
+    path: '/design',
     name: 'Design',
     component: () => import('../pages/Design.vue'),
-    // children: [
-    //   {
-    //     path: '',
-    //     redirect: { name: 'FieldList' },
-    //   },
-    //   {
-    //     path: 'field-list',
-    //     name: 'FieldList',
-    //     component: () => import('../pages/FieldList.vue'),
-    //   },
-    //   {
-    //     path: 'sqlite',
-    //     name: 'SQLite',
-    //     component: () => import('../pages/SQLite.vue'),
-    //   },
-    //   {
-    //     path: 'export-sql',
-    //     name: 'ExportSQL',
-    //     component: () => import('../pages/ExportSQL.vue'),
-    //   },
-    // ],
+  },
+  {
+    path: '/sqlite',
+    name: 'SQLite',
+    component: () => import('../pages/SQLite.vue'),
   },
 ];
 
@@ -37,6 +26,17 @@ const router = createRouter({
       top: 0,
     };
   },
+});
+
+router.beforeEach(async (to, from) => {
+  const sqlStore = useSqlStore();
+  try {
+    if (!sqlStore.sqliteDB) {
+      await sqlStore.initSqliteDB();
+    }
+  } catch (error) {
+    console.error('SQLite 初始化失敗:', error);
+  }
 });
 
 export default router;
