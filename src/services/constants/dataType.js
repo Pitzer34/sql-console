@@ -1,16 +1,16 @@
 export const DATATYPES = [
-  { label: 'int', value: 'int', hasLength: false },
-  { label: 'varchar', value: 'varchar', hasLength: true, defaultLength: 50 },
-  { label: 'nvarchar', value: 'nvarchar', hasLength: true, defaultLength: 50 },
-  { label: 'text', value: 'text', hasLength: false },
-  { label: 'ntext', value: 'ntext', hasLength: false },
-  { label: 'datetime', value: 'datetime', hasLength: false },
-  { label: 'bit', value: 'bit', hasLength: false },
-  { label: 'decimal', value: 'decimal', hasLength: true, defaultLength: '18,2' },
-  { label: 'float', value: 'float', hasLength: false },
-  { label: 'bigint', value: 'bigint', hasLength: false },
-  { label: 'smallint', value: 'smallint', hasLength: false },
-  { label: 'tinyint', value: 'tinyint', hasLength: false },
+  { label: 'integer', value: 'INTEGER', hasLength: false },
+  { label: 'text', value: 'TEXT', hasLength: false },
+  { label: 'real', value: 'REAL', hasLength: false },
+  { label: 'numeric', value: 'NUMERIC', hasLength: false },
+  { label: 'blob', value: 'BLOB', hasLength: false },
+  { label: 'varchar', value: 'VARCHAR', hasLength: true, defaultLength: 50 },
+  { label: 'char', value: 'CHAR', hasLength: true, defaultLength: 10 },
+  { label: 'decimal', value: 'DECIMAL', hasLength: true, defaultLength: '10,2' },
+  { label: 'boolean', value: 'BOOLEAN', hasLength: false },
+  { label: 'date', value: 'DATE', hasLength: false },
+  { label: 'datetime', value: 'DATETIME', hasLength: false },
+  { label: 'timestamp', value: 'TIMESTAMP', hasLength: false },
 ];
 
 export class COLUMNS {
