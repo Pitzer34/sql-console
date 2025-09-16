@@ -19,7 +19,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/sql-console'),
   routes: routes,
   scrollBehavior(to, from, savedPosition) {
     return {
