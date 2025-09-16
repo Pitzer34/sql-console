@@ -19,8 +19,7 @@ watch(
 
 const linkItems = ref([
   { routeNm: 'Design', label: '資料表設計', icon: 'fluent-mdl2:design' },
-  { routeNm: 'SQLite', label: 'SQLite', icon: 'file-icons:sqlite' },
-  // { routeNm: 'ExportSQL', label: 'ExportSQL', icon: '' },
+  { routeNm: 'Console', label: '控制台', icon: 'file-icons:sqlite' },
 ]);
 </script>
 
@@ -30,7 +29,7 @@ const linkItems = ref([
       <AppHeader />
       <div class="grid grid-cols-9 gap-6 mx-10">
         <div class="col-span-2">
-          <AppSidebar />
+          <AppSidebar class="bg-white h-[calc(100vh-110px)]" />
         </div>
         <div class="col-span-7">
           <Tabs v-model:value="tabValue" class="">
@@ -47,7 +46,7 @@ const linkItems = ref([
           </Tabs>
           <RouterView v-slot="{ Component }">
             <KeepAlive>
-              <component :is="Component" class="bg-white h-[calc(100vh-181px)] p-4" />
+              <component :is="Component" class="bg-white h-[calc(100vh-165px)] p-2" />
             </KeepAlive>
           </RouterView>
         </div>

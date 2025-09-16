@@ -1,10 +1,9 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useSqlStore } from '../store/sqlStore.js';
 import { useSqlite } from '../composables/sqlite.js';
 import { DATATYPES, COLUMNS } from '../services/constants/dataType.js';
-import { FloatLabel, InputText, Checkbox, Select, Button, useToast, Toast } from 'primevue';
-import AppCard from '../components/ui/AppCard.vue';
+import { FloatLabel, InputText, Checkbox, Select, Button, useToast, Toast, Card } from 'primevue';
 
 //* Pinia Store
 const sqlStore = useSqlStore();
@@ -51,35 +50,28 @@ const createTable = async () => {
     life: sqlStore.toastTime,
   });
 };
-
-// onMounted(async () => {
-//   const { isSuccess, message } = sqlite.mountSampleSqliteData();
-//   toast.add({
-//     severity: isSuccess ? 'success' : 'error',
-//     summary: message,
-//     life: sqlStore.toastTime,
-//   });
-// });
 </script>
 
 <template>
   <main>
     <Toast />
-    <AppCard class="mb-4">
-      <div class="flex justify-between items-center-safe">
-        <div class="flex gap-4">
-          <Button @click="addColumn()" size="small" outlined>新增欄位</Button>
-          <Button @click="deleteSelectedColumns()" size="small" severity="danger" outlined>刪除欄位</Button>
+    <Card class="mb-4" pt:body:class="!p-3">
+      <template #content>
+        <div class="flex justify-between items-center-safe">
+          <div class="flex gap-4">
+            <Button @click="addColumn()" size="small" outlined>新增欄位</Button>
+            <Button @click="deleteSelectedColumns()" size="small" severity="danger" outlined>刪除欄位</Button>
+          </div>
+          <div class="flex gap-4">
+            <FloatLabel variant="on">
+              <InputText id="createTableName" v-model="createTableName" size="small" class="w-48" />
+              <label for="createTableName">資料表名稱</label>
+            </FloatLabel>
+            <Button @click="createTable()" size="small">建立資料表</Button>
+          </div>
         </div>
-        <div class="flex gap-4">
-          <FloatLabel variant="on">
-            <InputText id="createTableName" v-model="createTableName" size="small" class="w-48" />
-            <label for="createTableName">資料表名稱</label>
-          </FloatLabel>
-          <Button @click="createTable()" size="small">建立資料表</Button>
-        </div>
-      </div>
-    </AppCard>
+      </template>
+    </Card>
     <div class="overflow-auto shadow-sm" style="max-height: calc(100vh - 290px)">
       <table class="w-full border-collapse">
         <thead class="sticky top-0 z-10">

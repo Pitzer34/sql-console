@@ -23,7 +23,7 @@ const tableList = computed(() =>
 </script>
 
 <template>
-  <div class="flex flex-col rounded p-1 bg-white h-full overflow-auto">
+  <div class="flex flex-col rounded p-1 overflow-auto">
     <div class="text-md font-bold text-slate-500 px-2 py-1.5">{{ '資料表' }}</div>
     <PanelMenu
       :model="tableList"
