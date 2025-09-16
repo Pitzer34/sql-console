@@ -1,4 +1,3 @@
-import initSqlJs from 'sql.js';
 import { useSqlStore } from '../store/sqlStore';
 import { getSampleData } from '../services/constants/sampleData';
 

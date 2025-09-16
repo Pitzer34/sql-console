@@ -6,9 +6,7 @@ const prop = defineProps({
     type: Object,
     default: () => ({}),
   },
-})
-
-
+});
 </script>
 
 <template>
