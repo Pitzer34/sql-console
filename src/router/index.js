@@ -12,14 +12,14 @@ const routes = [
     component: () => import('../pages/Design.vue'),
   },
   {
-    path: '/sqlite',
-    name: 'SQLite',
-    component: () => import('../pages/SQLite.vue'),
+    path: '/console',
+    name: 'Console',
+    component: () => import('../pages/Console.vue'),
   },
 ];
 
 const router = createRouter({
-  history: createWebHistory('/sql-console'),
+  history: createWebHistory(),
   routes: routes,
   scrollBehavior(to, from, savedPosition) {
     return {
